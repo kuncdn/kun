@@ -1,0 +1,50 @@
+default:
+  metricAddr: localhost:8000
+  graceTimeOut: 100
+  readTimeout: 100
+  idleTimeout: 100
+  writeTimeout: 100
+  maxHeaderBytes: 10000
+  readHeaderTimeout: 200
+
+frontends:
+- name: account
+  address: localhost:8080
+  ssl: false
+  certificate: ssl/tracfox.pem
+  certificateKey: ssl/tracfox-key.pem
+  rules:
+  - name: account
+    locationRegexp: ^/v1/account/(.*)
+    matchMethods: [GET,POST,PUT,DELETE,PATCH]
+    rewiteUriPath: /$1
+    useBackend: account
+    usePlugins:
+    - name: cors
+      config:
+        allowHeaders: Hack
+        allowOrigin: "*"
+        allowMethods: "GET"
+
+backends:
+- name: account
+  balance: roundrobin
+  servers:
+  - name: account1
+    weight: 2
+    failTimeout: 10
+    maxFails: 2
+    tcpTimeout: 100
+    tcpKeepAlive: 100
+    idleConnTimeout: 100
+    maxIdleConnsPerHost: 100
+    target: http://127.0.0.1:8083/
+  - name: account2
+    weight: 2
+    maxFails: 2
+    failTimeout: 10
+    tcpTimeout: 100
+    tcpKeepAlive: 100
+    idleConnTimeout: 100
+    maxIdleConnsPerHost: 100
+    target: http://127.0.0.1:8084/
