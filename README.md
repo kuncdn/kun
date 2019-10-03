@@ -39,6 +39,10 @@ go build -o tracfox cmd/tracfox/main.go
           --vmodule moduleSpec               comma-separated list of pattern=N settings for file-filtered logging
 
 
+# 检查配置文件正确性
+
+    # ./tracfox  --config=examples/config.yaml --logtostderr  -v 10  --dry-run
+
 # 运行
 
 
