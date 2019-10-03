@@ -77,7 +77,7 @@ func validateFrontends(c []config.Frontend, b []config.Backend) error {
 			errs = append(errs, err)
 		}
 
-		if front.SSL { // check ssl pem
+		if len(front.Certificate) != 0 || len(front.CertificateKey) != 0 { // check ssl pem
 			_, err := tls.LoadX509KeyPair(front.Certificate, front.CertificateKey)
 			if err != nil {
 				errs = append(errs, err)
@@ -90,7 +90,7 @@ func validateFrontends(c []config.Frontend, b []config.Backend) error {
 
 		frontNameMap[front.Name] = struct{}{}
 
-		if err := validateRules(front.Rules, b); err != nil {
+		if err := validateVirtualHost(front.VirtualHosts, b); err != nil {
 			errs = append(errs, err)
 		}
 	}
@@ -109,8 +109,8 @@ func validateRules(r []config.Rule, b []config.Backend) error {
 			errs = append(errs, err)
 		}
 
-		if !backendExists(b, rule.UseBackend) {
-			errs = append(errs, fmt.Errorf("backend %s not found", rule.UseBackend))
+		if !backendExists(b, rule.Backend) {
+			errs = append(errs, fmt.Errorf("backend %s not found", rule.Backend))
 		}
 
 		if _, ok := ruleNameMap[rule.Name]; ok {
@@ -119,7 +119,7 @@ func validateRules(r []config.Rule, b []config.Backend) error {
 
 		ruleNameMap[rule.Name] = struct{}{}
 
-		if err := validatePlugins(rule.UsePlugins); err != nil {
+		if err := validatePlugins(rule.Plugins); err != nil {
 			errs = append(errs, err)
 		}
 	}
@@ -184,6 +184,30 @@ func validatePlugins(ps []config.Plugin) error {
 			continue
 		}
 		if _, err := plugConstructor(plug.Config); err != nil {
+			errs = append(errs, err)
+		}
+	}
+	return util.NewAggregateError(errs)
+}
+
+func compileAllRegexp(raws []string) (regs []*regexp.Regexp, err error) {
+	for _, raw := range raws {
+		reg, err := regexp.Compile(raw)
+		if err != nil {
+			return nil, err
+		}
+		regs = append(regs, reg)
+	}
+	return
+}
+
+func validateVirtualHost(vs []config.VirtualHost, b []config.Backend) error {
+	errs := make([]error, 0)
+	for _, v := range vs {
+		if _, err := compileAllRegexp(v.Domains); err != nil {
+			errs = append(errs, err)
+		}
+		if err := validateRules(v.Rules, b); err != nil {
 			errs = append(errs, err)
 		}
 	}

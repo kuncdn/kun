@@ -53,12 +53,11 @@ type Default struct {
 
 // Frontend .
 type Frontend struct {
-	Name           string `yaml:"name" validate:"required"`
-	Address        string `yaml:"address" validate:"required"`
-	SSL            bool   `yaml:"ssl"`
-	Certificate    string `yaml:"certificate"`
-	CertificateKey string `yaml:"certificateKey"`
-	Rules          []Rule `yaml:"rules" validate:"required"`
+	Name           string        `yaml:"name" validate:"required"`
+	Address        string        `yaml:"address" validate:"required"`
+	Certificate    string        `yaml:"certificate"`
+	CertificateKey string        `yaml:"certificateKey"`
+	VirtualHosts   []VirtualHost `yaml:"virtualHosts" validate:"required"`
 }
 
 // Rule .
@@ -66,13 +65,19 @@ type Rule struct {
 	Name           string   `yaml:"name" validate:"required"`
 	LocationRegexp string   `yaml:"locationRegexp" validate:"required"`
 	MatchMethods   []string `yaml:"matchMethods" validate:"required"`
-	RewiteURIPath  string   `yaml:"rewiteUriPath"`
-	UseBackend     string   `yaml:"useBackend" validate:"required"`
-	UsePlugins     []Plugin `yaml:"usePlugins"`
+	RewitePath     string   `yaml:"rewitePath"`
+	Backend        string   `yaml:"backend" validate:"required"`
+	Plugins        []Plugin `yaml:"plugins"`
 }
 
 // Plugin .
 type Plugin struct {
 	Name   string                 `yaml:"name" validate:"required"`
 	Config map[string]interface{} `yaml:"config"`
+}
+
+// VirtualHost .
+type VirtualHost struct {
+	Domains []string `yaml:"domains" validate:"required"`
+	Rules   []Rule   `yaml:"rules" validate:"required"`
 }

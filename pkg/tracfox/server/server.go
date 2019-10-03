@@ -56,6 +56,14 @@ func describeFrontend(c config.TracwayConfiguration, name string) (config.Fronte
 	return config.Frontend{}, fmt.Errorf("frontend %s not found", name)
 }
 
+func mustCompileAllRegexp(raws []string) (regs []*regexp.Regexp) {
+	for _, raw := range raws {
+		reg := regexp.MustCompile(raw)
+		regs = append(regs, reg)
+	}
+	return regs
+}
+
 // New .
 func New(ctx context.Context, frontName string, cfg config.TracwayConfiguration) (*Server, error) {
 	front, err := describeFrontend(cfg, frontName)
@@ -63,41 +71,51 @@ func New(ctx context.Context, frontName string, cfg config.TracwayConfiguration)
 		glog.Errorln(err)
 		return nil, err
 	}
-	rules := make([]*Rule, 0)
-	for _, rule := range front.Rules {
-		backend, err := describeBackend(cfg, rule.UseBackend)
-		if err != nil {
-			glog.Errorln(err)
-			return nil, err
-		}
-		balancer, err := proxy.NewBalancer(backend.Balance)
-		if err != nil {
-			glog.Errorln(err)
-			return nil, err
-		}
-		// 添加后端
-		for _, v := range backend.Servers {
-			balancer.Append(proxy.NewBalancedReverseProxy(v), &proxy.Config{
-				Name:        v.Name,
-				Weight:      v.Weight,
-				FailTimeout: (time.Duration(v.FailTimeout) * time.Second).Nanoseconds(), // 纳秒
-				Maxfails:    v.Maxfails,
+
+	virtualHosts := make([]*VirtualHost, 0)
+
+	for _, host := range front.VirtualHosts {
+		regs := mustCompileAllRegexp(host.Domains)
+		rules := make([]*Rule, 0)
+		for _, rule := range host.Rules {
+			backend, err := describeBackend(cfg, rule.Backend)
+			if err != nil {
+				glog.Errorln(err)
+				return nil, err
+			}
+			balancer, err := proxy.NewBalancer(backend.Balance)
+			if err != nil {
+				glog.Errorln(err)
+				return nil, err
+			}
+			// 添加后端
+			for _, v := range backend.Servers {
+				balancer.Append(proxy.NewBalancedReverseProxy(v), &proxy.Config{
+					Name:        v.Name,
+					Weight:      v.Weight,
+					FailTimeout: (time.Duration(v.FailTimeout) * time.Second).Nanoseconds(), // 纳秒
+					Maxfails:    v.Maxfails,
+				})
+			}
+
+			pluginsChain, err := plugin.NewChain(rule.Plugins)
+			if err != nil {
+				glog.Errorln(err)
+				return nil, err
+			}
+
+			rules = append(rules, &Rule{
+				name:       rule.Name,
+				methods:    rule.MatchMethods,
+				rewitePath: rule.RewitePath,
+				reg:        regexp.MustCompile(rule.LocationRegexp),
+				chain:      pluginsChain,
+				balancer:   balancer,
 			})
 		}
-
-		pluginsChain, err := plugin.NewChain(rule.UsePlugins)
-		if err != nil {
-			glog.Errorln(err)
-			return nil, err
-		}
-
-		rules = append(rules, &Rule{
-			name:          rule.Name,
-			methods:       rule.MatchMethods,
-			rewiteURIPath: rule.RewiteURIPath,
-			reg:           regexp.MustCompile(rule.LocationRegexp),
-			chain:         pluginsChain,
-			balancer:      balancer,
+		virtualHosts = append(virtualHosts, &VirtualHost{
+			virtualHostRegs: regs,
+			mgr:             &RuleMgr{rules: rules},
 		})
 	}
 
@@ -110,11 +128,10 @@ func New(ctx context.Context, frontName string, cfg config.TracwayConfiguration)
 	return &Server{
 		name:           frontName,
 		cfg:            cfg,
-		ssl:            front.SSL,
 		certificate:    front.Certificate,
 		certificateKey: front.CertificateKey,
 		server: &http.Server{
-			Handler:           chain.Then(&RuleMgr{rules: rules}),
+			Handler:           chain.Then(&VirtualHostMgr{virtualHosts: virtualHosts}),
 			Addr:              front.Address,
 			ReadTimeout:       time.Duration(cfg.Default.ReadTimeout) * time.Second,
 			WriteTimeout:      time.Duration(cfg.Default.WriteTimeout) * time.Second,
