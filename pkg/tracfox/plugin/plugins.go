@@ -21,10 +21,12 @@ import (
 	"github.com/justinas/alice"
 	"tracfox.io/tracfox/pkg/tracfox/config"
 	"tracfox.io/tracfox/pkg/tracfox/plugin/cors"
+	"tracfox.io/tracfox/pkg/tracfox/plugin/labchan"
 )
 
 func init() {
 	plugins["cors"] = cors.Constructor
+	plugins["accessByAccount"] = labchan.Constructor
 }
 
 var (

@@ -13,7 +13,7 @@ frontends:
   # certificate: ssl/tracfox.pem
   # certificateKey: ssl/tracfox-key.pem
   virtualHosts:
-    - domains: [ www.baidu.com ]
+    - domains: [ "localhost" ]
       rules:
       - name: account
         locationRegexp: ^/v1/account/(.*)
@@ -26,6 +26,11 @@ frontends:
             allowHeaders: Hack
             allowOrigin: "*"
             allowMethods: "GET"
+        - name: accessByAccount
+          config:
+            serverName: account
+            address: localhost:8082
+            certificate: /Users/aapeli/labchan/ssl/ca.pem
 
 backends:
 - name: account
