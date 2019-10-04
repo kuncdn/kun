@@ -31,13 +31,13 @@ import (
 // Server .
 type Server struct {
 	name           string
-	cfg            config.TracwayConfiguration
+	cfg            config.TracfoxConfiguration
 	certificate    string
 	certificateKey string
 	server         *http.Server
 }
 
-func describeBackend(c config.TracwayConfiguration, name string) (config.Backend, error) {
+func describeBackend(c config.TracfoxConfiguration, name string) (config.Backend, error) {
 	for i := 0; i < len(c.Backends); i++ {
 		if c.Backends[i].Name == name {
 			return c.Backends[i], nil
@@ -46,7 +46,7 @@ func describeBackend(c config.TracwayConfiguration, name string) (config.Backend
 	return config.Backend{}, fmt.Errorf("backend %s not found", name)
 }
 
-func describeFrontend(c config.TracwayConfiguration, name string) (config.Frontend, error) {
+func describeFrontend(c config.TracfoxConfiguration, name string) (config.Frontend, error) {
 	for i := 0; i < len(c.Frontends); i++ {
 		if c.Frontends[i].Name == name {
 			return c.Frontends[i], nil
@@ -64,7 +64,7 @@ func mustCompileAllRegexp(raws []string) (regs []*regexp.Regexp) {
 }
 
 // New .
-func New(ctx context.Context, frontName string, cfg config.TracwayConfiguration) (*Server, error) {
+func New(ctx context.Context, frontName string, cfg config.TracfoxConfiguration) (*Server, error) {
 	front, err := describeFrontend(cfg, frontName)
 	if err != nil {
 		glog.Errorln(err)
@@ -163,7 +163,7 @@ type Manager struct {
 }
 
 // NewManager .
-func NewManager(ctx context.Context, cfg config.TracwayConfiguration) (*Manager, error) {
+func NewManager(ctx context.Context, cfg config.TracfoxConfiguration) (*Manager, error) {
 	servers := make([]*Server, 0)
 	for _, frontend := range cfg.Frontends {
 		server, err := New(ctx, frontend.Name, cfg)

@@ -27,8 +27,8 @@ import (
 	"tracfox.io/tracfox/pkg/tracfox/proxy"
 )
 
-// AddTracwayConfigurationFlags 将config.TracwayConfiguration对应的所有flag添加到指定的  pflag.FlagSet中
-func AddTracwayConfigurationFlags(mainfs *pflag.FlagSet, f *config.TracwayConfiguration) {
+// AddTracfoxConfigurationFlags 将config.TracfoxConfiguration对应的所有flag添加到指定的  pflag.FlagSet中
+func AddTracfoxConfigurationFlags(mainfs *pflag.FlagSet, f *config.TracfoxConfiguration) {
 	fs := pflag.NewFlagSet("", pflag.ExitOnError)
 	defer func() {
 		mainfs.AddFlagSet(fs)
@@ -42,8 +42,8 @@ func init() {
 	validate = validator.New()
 }
 
-//ValidateTracwayConfiguration 验证 TracwayConfiguration中填充的数据是否满足要求
-func ValidateTracwayConfiguration(f *config.TracwayConfiguration) (errs []error) {
+//ValidateTracfoxConfiguration 验证 TracfoxConfiguration中填充的数据是否满足要求
+func ValidateTracfoxConfiguration(f *config.TracfoxConfiguration) (errs []error) {
 	if err := validateDefault(f.Default); err != nil {
 		errs = append(errs, err)
 	}

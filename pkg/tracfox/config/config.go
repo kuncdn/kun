@@ -13,8 +13,8 @@ limitations under the License.
 
 package config
 
-// TracwayConfiguration .
-type TracwayConfiguration struct {
+// TracfoxConfiguration .
+type TracfoxConfiguration struct {
 	Default   Default    `yaml:"default" validate:"required"`
 	Frontends []Frontend `yaml:"frontends" validate:"required"`
 	Backends  []Backend  `yaml:"backends" validate:"required"`

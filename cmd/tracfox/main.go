@@ -30,7 +30,7 @@ func init() {
 func main() {
 	rand.Seed(time.Now().UnixNano())
 	stopChan := server.SetupSignalHandler()
-	cmd := app.NewTracwayCommand(stopChan)
+	cmd := app.NewTracfoxCommand(stopChan)
 	if err := cmd.Execute(); err != nil {
 		glog.Fatalln(err.Error())
 	}

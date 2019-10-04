@@ -33,18 +33,18 @@ import (
 
 const (
 	// componenttracway component name
-	componentTracway = "tracfox"
+	componentTracfox = "tracfox"
 )
 
-// NewTracwayCommand 新建 tracwayCommand
-func NewTracwayCommand(stopCh <-chan struct{}) *cobra.Command {
-	cleanFlagSet := pflag.NewFlagSet(componentTracway, pflag.ContinueOnError)
-	tracwayFlags := options.NewTracwayFlags()
+// NewTracfoxCommand 新建 tracwayCommand
+func NewTracfoxCommand(stopCh <-chan struct{}) *cobra.Command {
+	cleanFlagSet := pflag.NewFlagSet(componentTracfox, pflag.ContinueOnError)
+	tracwayFlags := options.NewTracfoxFlags()
 
-	tracwayConfiguration := &config.TracwayConfiguration{} // 携带默认值的配置
+	tracwayConfiguration := &config.TracfoxConfiguration{} // 携带默认值的配置
 
 	cmd := &cobra.Command{
-		Use:                componentTracway,
+		Use:                componentTracfox,
 		Short:              "tracfox service, is the api gateway micro service component of labchan",
 		DisableFlagParsing: true,
 		Run: func(cmd *cobra.Command, args []string) {
@@ -69,11 +69,11 @@ func NewTracwayCommand(stopCh <-chan struct{}) *cobra.Command {
 				return
 			}
 
-			if errs := options.ValidateTracwayFlags(tracwayFlags); len(errs) != 0 {
+			if errs := options.ValidateTracfoxFlags(tracwayFlags); len(errs) != 0 {
 				glog.Exitln(util.NewAggregateError(errs))
 			}
 
-			if configFile := tracwayFlags.TracwayConfig; len(configFile) != 0 {
+			if configFile := tracwayFlags.TracfoxConfig; len(configFile) != 0 {
 				loadConfigFile(configFile)
 				tracwayConfiguration, err = loadConfigFile(configFile)
 				if err != nil {
@@ -82,7 +82,7 @@ func NewTracwayCommand(stopCh <-chan struct{}) *cobra.Command {
 				if err := tracwayFlagPrecedence(tracwayConfiguration, args); err != nil {
 					glog.Exitln(err.Error())
 				}
-				if errs := options.ValidateTracwayConfiguration(tracwayConfiguration); len(errs) != 0 {
+				if errs := options.ValidateTracfoxConfiguration(tracwayConfiguration); len(errs) != 0 {
 					glog.Exitln("config file is incorrect error msg:", util.NewAggregateError(errs))
 				}
 			}
@@ -114,17 +114,17 @@ func NewTracwayCommand(stopCh <-chan struct{}) *cobra.Command {
 	tracwayFlags.AddFlags(cleanFlagSet)
 	cleanFlagSet.AddGoFlagSet(flag.CommandLine)
 	flag.CommandLine.Parse([]string{})
-	options.AddTracwayConfigurationFlags(cleanFlagSet, tracwayConfiguration)
+	options.AddTracfoxConfigurationFlags(cleanFlagSet, tracwayConfiguration)
 	cmd.Flags().AddFlagSet(cleanFlagSet)
 	return cmd
 }
 
-func tracwayFlagPrecedence(tracwayConfiguration *config.TracwayConfiguration, args []string) error {
+func tracwayFlagPrecedence(tracwayConfiguration *config.TracfoxConfiguration, args []string) error {
 	fs := pflag.NewFlagSet("", pflag.ContinueOnError)
 	fs.AddGoFlagSet(flag.CommandLine)
-	tracwayFlags := options.NewTracwayFlags()
+	tracwayFlags := options.NewTracfoxFlags()
 
-	options.AddTracwayConfigurationFlags(fs, tracwayConfiguration)
+	options.AddTracfoxConfigurationFlags(fs, tracwayConfiguration)
 	tracwayFlags.AddFlags(fs)
 	if err := fs.Parse(args); err != nil {
 		return err
@@ -132,8 +132,8 @@ func tracwayFlagPrecedence(tracwayConfiguration *config.TracwayConfiguration, ar
 	return nil
 }
 
-func loadConfigFile(filename string) (*config.TracwayConfiguration, error) {
-	tracwayConfiguration := config.TracwayConfiguration{}
+func loadConfigFile(filename string) (*config.TracfoxConfiguration, error) {
+	tracwayConfiguration := config.TracfoxConfiguration{}
 	file, err := os.OpenFile(filename, os.O_RDONLY, 0600)
 	if err != nil {
 		return nil, err
