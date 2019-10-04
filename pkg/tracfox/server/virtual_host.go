@@ -8,7 +8,7 @@ import (
 // VirtualHost .
 type VirtualHost struct {
 	virtualHostRegs []*regexp.Regexp
-	mgr             *RuleMgr
+	next            http.Handler
 }
 
 // Match .
@@ -22,7 +22,7 @@ func (d *VirtualHost) Match(virtualHost string) bool {
 }
 
 func (d *VirtualHost) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
-	d.mgr.ServeHTTP(rw, req)
+	d.next.ServeHTTP(rw, req)
 }
 
 // VirtualHostMgr .

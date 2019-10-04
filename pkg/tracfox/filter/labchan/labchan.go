@@ -75,30 +75,30 @@ func Constructor(args map[string]interface{}) (alice.Constructor, error) {
 	var errs []error
 	_, ok := args["serverName"]
 	if !ok {
-		errs = append(errs, errors.New("labchan plugin serverName field is required"))
+		errs = append(errs, errors.New("labchan filter serverName field is required"))
 	}
 
 	serverName, ok := args["serverName"].(string)
 	if !ok {
-		errs = append(errs, errors.New("labchan plugin serverName must be string"))
+		errs = append(errs, errors.New("labchan filter serverName must be string"))
 	}
 
 	_, ok = args["address"]
 	if !ok {
-		errs = append(errs, errors.New("labchan plugin address field is required"))
+		errs = append(errs, errors.New("labchan filter address field is required"))
 	}
 	address, ok := args["address"].(string)
 	if !ok {
-		errs = append(errs, errors.New("labchan plugin address must be string"))
+		errs = append(errs, errors.New("labchan filter address must be string"))
 	}
 
 	_, ok = args["certificate"]
 	if !ok {
-		errs = append(errs, errors.New("labchan plugin certificate field is required"))
+		errs = append(errs, errors.New("labchan filter certificate field is required"))
 	}
 	certificate, ok := args["certificate"].(string)
 	if !ok {
-		errs = append(errs, errors.New("labchan plugin certificate must be string"))
+		errs = append(errs, errors.New("labchan filter certificate must be string"))
 	}
 
 	creds, err := credentials.NewClientTLSFromFile(certificate, serverName)

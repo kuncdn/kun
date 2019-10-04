@@ -73,7 +73,7 @@ go build -o tracfox cmd/tracfox/main.go
             matchMethods: [GET,POST,PUT,DELETE,PATCH]
             rewitePath: /$1
             backend: account
-            plugins:
+            filters:
             - name: cors
               config:
                 allowHeaders: "Content-Type,Accept"

@@ -11,7 +11,7 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package plugin
+package filter
 
 import (
 	"errors"
@@ -20,56 +20,56 @@ import (
 	"github.com/golang/glog"
 	"github.com/justinas/alice"
 	"tracfox.io/tracfox/pkg/tracfox/config"
-	"tracfox.io/tracfox/pkg/tracfox/plugin/cors"
-	"tracfox.io/tracfox/pkg/tracfox/plugin/labchan"
+	"tracfox.io/tracfox/pkg/tracfox/filter/cors"
+	"tracfox.io/tracfox/pkg/tracfox/filter/labchan"
 )
 
 func init() {
-	plugins["cors"] = cors.Constructor
-	plugins["accessByAccount"] = labchan.Constructor
+	filters["cors"] = cors.Constructor
+	filters["accessByAccount"] = labchan.Constructor
 }
 
 var (
-	// plugins is a map of plugin name to Plugin.
-	plugins = make(map[string]Constructor)
+	// filters is a map of filter name to Filter.
+	filters = make(map[string]Constructor)
 )
 
-// Constructor defines basic methods for plugins
+// Constructor defines basic methods for filters
 type Constructor func(cfg map[string]interface{}) (alice.Constructor, error)
 
-// RegisterPlugin plugs in plugin. All plugins should register
+// RegisterFilter plugs in filter. All filters should register
 // themselves, even if they do not perform an action associated
 // with a directive. It is important for the process to know
-// which plugins are available.
+// which filters are available.
 //
-// The plugin MUST have a name: lower case and one word.
-// If this plugin has an action, it must be the name of
+// The filter MUST have a name: lower case and one word.
+// If this filter has an action, it must be the name of
 // the directive that invokes it. A name is always required
 // and must be unique for the server type.
-func RegisterPlugin(name string, plugin Constructor) error {
+func RegisterFilter(name string, filter Constructor) error {
 	if name == "" {
-		return errors.New("plugin must have a name")
+		return errors.New("filter must have a name")
 	}
-	if _, dup := plugins[name]; dup {
-		return fmt.Errorf("plugin named %s  already registered", name)
+	if _, dup := filters[name]; dup {
+		return fmt.Errorf("filter named %s  already registered", name)
 	}
-	plugins[name] = plugin
+	filters[name] = filter
 	return nil
 }
 
-// DescribePlugin gets the action for a plugin
-func DescribePlugin(name string) (Constructor, error) {
-	if plugin, ok := plugins[name]; ok {
-		return plugin, nil
+// DescribeFilter gets the action for a filter
+func DescribeFilter(name string) (Constructor, error) {
+	if filter, ok := filters[name]; ok {
+		return filter, nil
 	}
-	return nil, fmt.Errorf("plugin %q not found", name)
+	return nil, fmt.Errorf("filter %q not found", name)
 }
 
 // NewChain .
-func NewChain(ps []config.Plugin) (alice.Chain, error) {
+func NewChain(ps []config.Filter) (alice.Chain, error) {
 	chain := alice.New()
 	for _, v := range ps {
-		constructor, err := DescribePlugin(v.Name)
+		constructor, err := DescribeFilter(v.Name)
 		if err != nil {
 			glog.Errorln(err)
 			return chain, err
