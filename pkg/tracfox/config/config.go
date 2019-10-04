@@ -42,13 +42,12 @@ type Server struct {
 
 // Default .
 type Default struct {
-	MetricAddr        string `yaml:"metricAddr" validate:"required"`
-	ReadTimeout       int    `yaml:"readTimeout" validate:"required,min=0"`
-	IdleTimeout       int    `yaml:"idleTimeout" validate:"required,min=0"`
-	WriteTimeout      int    `yaml:"writeTimeout" validate:"required,min=0"`
-	MaxHeaderBytes    int    `yaml:"maxHeaderBytes" validate:"required,min=0"`
-	ReadHeaderTimeout int    `yaml:"readHeaderTimeout" validate:"required,min=0"`
-	GraceTimeOut      int    `yaml:"graceTimeOut" validate:"required,min=0"`
+	ReadTimeout       int `yaml:"readTimeout" validate:"required,min=0"`
+	IdleTimeout       int `yaml:"idleTimeout" validate:"required,min=0"`
+	WriteTimeout      int `yaml:"writeTimeout" validate:"required,min=0"`
+	MaxHeaderBytes    int `yaml:"maxHeaderBytes" validate:"required,min=0"`
+	ReadHeaderTimeout int `yaml:"readHeaderTimeout" validate:"required,min=0"`
+	GraceTimeOut      int `yaml:"graceTimeOut" validate:"required,min=0"`
 }
 
 // Frontend .
@@ -67,17 +66,18 @@ type Rule struct {
 	MatchMethods   []string `yaml:"matchMethods" validate:"required"`
 	RewitePath     string   `yaml:"rewitePath"`
 	Backend        string   `yaml:"backend" validate:"required"`
-	Plugins        []Plugin `yaml:"plugins"`
+	Filters        []Filter `yaml:"filters"`
 }
 
-// Plugin .
-type Plugin struct {
+// Filter .
+type Filter struct {
 	Name   string                 `yaml:"name" validate:"required"`
 	Config map[string]interface{} `yaml:"config"`
 }
 
 // VirtualHost .
 type VirtualHost struct {
+	Filters []Filter `yaml:"filters"`
 	Domains []string `yaml:"domains" validate:"required"`
 	Rules   []Rule   `yaml:"rules" validate:"required"`
 }

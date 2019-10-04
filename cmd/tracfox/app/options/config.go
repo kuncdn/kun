@@ -23,7 +23,7 @@ import (
 	"gopkg.in/go-playground/validator.v9"
 	"tracfox.io/tracfox/internal/util"
 	"tracfox.io/tracfox/pkg/tracfox/config"
-	"tracfox.io/tracfox/pkg/tracfox/plugin"
+	"tracfox.io/tracfox/pkg/tracfox/filter"
 	"tracfox.io/tracfox/pkg/tracfox/proxy"
 )
 
@@ -33,7 +33,7 @@ func AddTracfoxConfigurationFlags(mainfs *pflag.FlagSet, f *config.TracfoxConfig
 	defer func() {
 		mainfs.AddFlagSet(fs)
 	}()
-	fs.StringVar(&f.Default.MetricAddr, "metrics", f.Default.MetricAddr, "Metric address for tracfox server")
+	// fs.StringVar(&f.Default.MetricAddr, "metrics", f.Default.MetricAddr, "Metric address for tracfox server")
 }
 
 var validate *validator.Validate
@@ -119,7 +119,7 @@ func validateRules(r []config.Rule, b []config.Backend) error {
 
 		ruleNameMap[rule.Name] = struct{}{}
 
-		if err := validatePlugins(rule.Plugins); err != nil {
+		if err := validateFilters(rule.Filters); err != nil {
 			errs = append(errs, err)
 		}
 	}
@@ -172,13 +172,13 @@ func validateServers(s []config.Server) error {
 	return util.NewAggregateError(errs)
 }
 
-func validatePlugins(ps []config.Plugin) error {
+func validateFilters(ps []config.Filter) error {
 	errs := make([]error, 0)
-	for _, plug := range ps { //Plugin error checking
+	for _, plug := range ps { //Filter error checking
 		if err := validate.Struct(plug); err != nil {
 			errs = append(errs, err)
 		}
-		plugConstructor, err := plugin.DescribePlugin(plug.Name)
+		plugConstructor, err := filter.DescribeFilter(plug.Name)
 		if err != nil {
 			errs = append(errs, err)
 			continue

@@ -23,14 +23,14 @@ import (
 
 const name = "cors"
 
-type corsPlugin struct {
+type corsFilter struct {
 	allowOrigin  string
 	allowMethods string
 	allowHeaders string
 }
 
 type cors struct {
-	plug *corsPlugin
+	plug *corsFilter
 	next http.Handler
 }
 
@@ -49,30 +49,30 @@ func Constructor(args map[string]interface{}) (alice.Constructor, error) {
 	var errs []error
 	_, ok := args["allowOrigin"]
 	if !ok {
-		errs = append(errs, errors.New("cors plugin allowOrigin field is required"))
+		errs = append(errs, errors.New("cors filter allowOrigin field is required"))
 	}
 
 	allowOrigin, ok := args["allowOrigin"].(string)
 	if !ok {
-		errs = append(errs, errors.New("cors plugin allowOrigin must be string"))
+		errs = append(errs, errors.New("cors filter allowOrigin must be string"))
 	}
 
 	_, ok = args["allowMethods"]
 	if !ok {
-		errs = append(errs, errors.New("cors plugin allowMethods field is required"))
+		errs = append(errs, errors.New("cors filter allowMethods field is required"))
 	}
 	allowMethods, ok := args["allowMethods"].(string)
 	if !ok {
-		errs = append(errs, errors.New("cors plugin allowMethods must be string"))
+		errs = append(errs, errors.New("cors filter allowMethods must be string"))
 	}
 
 	_, ok = args["allowHeaders"]
 	if !ok {
-		errs = append(errs, errors.New("cors plugin allowHeaders field is required"))
+		errs = append(errs, errors.New("cors filter allowHeaders field is required"))
 	}
 	allowHeaders, ok := args["allowHeaders"].(string)
 	if !ok {
-		errs = append(errs, errors.New("cors plugin allowHeaders must be string"))
+		errs = append(errs, errors.New("cors filter allowHeaders must be string"))
 	}
 
 	if len(errs) != 0 {
@@ -81,7 +81,7 @@ func Constructor(args map[string]interface{}) (alice.Constructor, error) {
 	return func(next http.Handler) http.Handler {
 		return &cors{
 			next: next,
-			plug: &corsPlugin{
+			plug: &corsFilter{
 				allowOrigin:  allowOrigin,
 				allowMethods: allowMethods,
 				allowHeaders: allowHeaders,

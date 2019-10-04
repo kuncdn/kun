@@ -23,8 +23,8 @@ import (
 	"github.com/golang/glog"
 	"tracfox.io/tracfox/internal/util"
 	"tracfox.io/tracfox/pkg/tracfox/config"
+	"tracfox.io/tracfox/pkg/tracfox/filter"
 	"tracfox.io/tracfox/pkg/tracfox/middleware"
-	"tracfox.io/tracfox/pkg/tracfox/plugin"
 	"tracfox.io/tracfox/pkg/tracfox/proxy"
 )
 
@@ -72,9 +72,13 @@ func New(ctx context.Context, frontName string, cfg config.TracfoxConfiguration)
 	}
 
 	virtualHosts := make([]*VirtualHost, 0)
-
 	for _, host := range front.VirtualHosts {
 		regs := mustCompileAllRegexp(host.Domains)
+		hostFilterChain, err := filter.NewChain(host.Filters)
+		if err != nil {
+			glog.Errorln(err)
+			return nil, err
+		}
 		rules := make([]*Rule, 0)
 		for _, rule := range host.Rules {
 			backend, err := describeBackend(cfg, rule.Backend)
@@ -97,7 +101,7 @@ func New(ctx context.Context, frontName string, cfg config.TracfoxConfiguration)
 				})
 			}
 
-			pluginsChain, err := plugin.NewChain(rule.Plugins)
+			filtersChain, err := filter.NewChain(rule.Filters)
 			if err != nil {
 				glog.Errorln(err)
 				return nil, err
@@ -107,13 +111,13 @@ func New(ctx context.Context, frontName string, cfg config.TracfoxConfiguration)
 				name:     rule.Name,
 				methods:  rule.MatchMethods,
 				reg:      regexp.MustCompile(rule.LocationRegexp),
-				chain:    pluginsChain,
+				chain:    filtersChain,
 				balancer: balancer,
 			})
 		}
 		virtualHosts = append(virtualHosts, &VirtualHost{
+			next:            hostFilterChain.Then(&RuleMgr{rules: rules}),
 			virtualHostRegs: regs,
-			mgr:             &RuleMgr{rules: rules},
 		})
 	}
 

@@ -1,5 +1,4 @@
 default:
-  metricAddr: localhost:8000
   graceTimeOut: 100
   readTimeout: 100
   idleTimeout: 100
@@ -13,19 +12,20 @@ frontends:
   certificate: /Users/aapeli/labchan/ssl/account.pem
   certificateKey: /Users/aapeli/labchan/ssl/account-key.pem
   virtualHosts:
-    - domains: [ "localhost" ]
+    - domains: ["localhost"]
+      filters:
+      - name: cors
+        config:
+          allowHeaders: "Content-Type,Accept"
+          allowOrigin: "*"
+          allowMethods: "GET,POST,PUT,DELETE,PATCH"
       rules:
       - name: account
         locationRegexp: ^/v1/account/(.*)
         matchMethods: [GET,POST,PUT,DELETE,PATCH]
         rewitePath: /$1
         backend: account
-        plugins:
-        - name: cors
-          config:
-            allowHeaders: "Content-Type,Accept"
-            allowOrigin: "*"
-            allowMethods: "GET"
+        filters:
         - name: accessByAccount
           config:
             serverName: account
