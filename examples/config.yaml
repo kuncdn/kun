@@ -10,8 +10,8 @@ default:
 frontends:
 - name: account
   address: localhost:8080
-  # certificate: ssl/tracfox.pem
-  # certificateKey: ssl/tracfox-key.pem
+  certificate: /Users/aapeli/labchan/ssl/account.pem
+  certificateKey: /Users/aapeli/labchan/ssl/account-key.pem
   virtualHosts:
     - domains: [ "localhost" ]
       rules:

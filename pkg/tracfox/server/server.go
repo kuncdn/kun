@@ -32,7 +32,6 @@ import (
 type Server struct {
 	name           string
 	cfg            config.TracwayConfiguration
-	ssl            bool
 	certificate    string
 	certificateKey string
 	server         *http.Server
@@ -144,12 +143,12 @@ func New(ctx context.Context, frontName string, cfg config.TracwayConfiguration)
 
 // Run .
 func (s *Server) Run() error {
-	if !s.ssl {
-		glog.Infof("Frontend %s ListenAndServe At %s", s.name, s.server.Addr)
-		return s.server.ListenAndServe()
+	if len(s.certificate) != 0 || len(s.certificateKey) != 0 {
+		glog.Infof("Frontend %s ListenAndServeTLS At %s", s.name, s.server.Addr)
+		return s.server.ListenAndServeTLS(s.certificate, s.certificateKey)
 	}
-	glog.Infof("Frontend %s ListenAndServeTLS At %s", s.name, s.server.Addr)
-	return s.server.ListenAndServeTLS(s.certificate, s.certificateKey)
+	glog.Infof("Frontend %s ListenAndServe At %s", s.name, s.server.Addr)
+	return s.server.ListenAndServe()
 }
 
 // GracefulStop .
