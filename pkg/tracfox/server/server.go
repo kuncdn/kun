@@ -73,8 +73,8 @@ func New(ctx context.Context, frontName string, cfg config.TracfoxConfiguration)
 
 	virtualHosts := make([]*VirtualHost, 0)
 	for _, host := range front.VirtualHosts {
-		regs := mustCompileAllRegexp(host.Domains)
-		hostFilterChain, err := filter.NewChain(host.Filters)
+		virtualHostRegs := mustCompileAllRegexp(host.Domains)
+		virtualHostFilterChain, err := filter.NewChain(host.Filters)
 		if err != nil {
 			glog.Errorln(err)
 			return nil, err
@@ -96,7 +96,7 @@ func New(ctx context.Context, frontName string, cfg config.TracfoxConfiguration)
 				balancer.Append(proxy.NewBalancedReverseProxy(rule, v), &proxy.Config{
 					Name:        v.Name,
 					Weight:      v.Weight,
-					FailTimeout: (time.Duration(v.FailTimeout) * time.Second).Nanoseconds(), // 纳秒
+					FailTimeout: (time.Duration(v.FailTimeout) * time.Second).Nanoseconds(), // Nanoseconds
 					Maxfails:    v.Maxfails,
 				})
 			}
@@ -116,8 +116,8 @@ func New(ctx context.Context, frontName string, cfg config.TracfoxConfiguration)
 			})
 		}
 		virtualHosts = append(virtualHosts, &VirtualHost{
-			next:            hostFilterChain.Then(&RuleMgr{rules: rules}),
-			virtualHostRegs: regs,
+			next:            virtualHostFilterChain.Then(&RuleMgr{rules: rules}),
+			virtualHostRegs: virtualHostRegs,
 		})
 	}
 
