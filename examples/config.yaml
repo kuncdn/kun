@@ -23,7 +23,7 @@ frontends:
         plugins:
         - name: cors
           config:
-            allowHeaders: Hack
+            allowHeaders: "Content-Type,Accept"
             allowOrigin: "*"
             allowMethods: "GET"
         - name: accessByAccount
