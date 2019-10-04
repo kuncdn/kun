@@ -16,9 +16,9 @@ frontends:
       filters:
       - name: cors
         config:
-          allowHeaders: "Content-Type,Accept"
+          allowHeaders: "Content-Type,AccessToken,X-CSRF-Token, Authorization, Token"
           allowOrigin: "*"
-          allowMethods: "GET,POST,PUT,DELETE,PATCH"
+          allowMethods: "GET, POST, PUT, DELETE, PATCH, OPTIONS"
       rules:
       - name: account
         locationRegexp: ^/v1/account/(.*)
