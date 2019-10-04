@@ -19,6 +19,7 @@ import (
 	"net/http"
 	"net/http/httputil"
 	"net/url"
+	"regexp"
 	"time"
 
 	"tracfox.io/tracfox/internal/util"
@@ -26,9 +27,9 @@ import (
 )
 
 // NewBalancedReverseProxy .
-func NewBalancedReverseProxy(def config.Server) *httputil.ReverseProxy {
+func NewBalancedReverseProxy(rule config.Rule, def config.Server) *httputil.ReverseProxy {
 	return &httputil.ReverseProxy{
-		Director: createDirector(def),
+		Director: createDirector(rule, def),
 		Transport: &http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 			Proxy:           http.ProxyFromEnvironment,
@@ -46,14 +47,20 @@ func NewBalancedReverseProxy(def config.Server) *httputil.ReverseProxy {
 	}
 }
 
-func createDirector(def config.Server) func(*http.Request) {
+func createDirector(rule config.Rule, def config.Server) func(*http.Request) {
 	target, err := url.Parse(def.Target)
 	if err != nil {
 		panic(err)
 	}
+	reg := regexp.MustCompile(rule.LocationRegexp)
+
 	return func(req *http.Request) {
 		req.URL.Scheme = target.Scheme
 		req.URL.Host = target.Host
+		if len(rule.RewitePath) != 0 {
+			match := reg.FindSubmatchIndex([]byte(req.URL.Path))
+			req.URL.Path = string(reg.Expand(nil, []byte(rule.RewitePath), []byte(req.URL.Path), match))
+		}
 		req.URL.Path = util.SingleJoiningSlash(target.Path, req.URL.Path)
 		if target.RawQuery == "" || req.URL.RawQuery == "" {
 			req.URL.RawQuery = target.RawQuery + req.URL.RawQuery

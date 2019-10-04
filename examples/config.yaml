@@ -44,14 +44,5 @@ backends:
     tcpKeepAlive: 100
     idleConnTimeout: 100
     maxIdleConnsPerHost: 100
-    target: http://127.0.0.1:8083/
+    target: https://127.0.0.1:8083/
 
-  - name: account2
-    weight: 2
-    maxFails: 2
-    failTimeout: 10
-    tcpTimeout: 100
-    tcpKeepAlive: 100
-    idleConnTimeout: 100
-    maxIdleConnsPerHost: 100
-    target: http://127.0.0.1:8084/

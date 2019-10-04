@@ -89,7 +89,7 @@ func New(ctx context.Context, frontName string, cfg config.TracfoxConfiguration)
 			}
 			// 添加后端
 			for _, v := range backend.Servers {
-				balancer.Append(proxy.NewBalancedReverseProxy(v), &proxy.Config{
+				balancer.Append(proxy.NewBalancedReverseProxy(rule, v), &proxy.Config{
 					Name:        v.Name,
 					Weight:      v.Weight,
 					FailTimeout: (time.Duration(v.FailTimeout) * time.Second).Nanoseconds(), // 纳秒
@@ -104,12 +104,11 @@ func New(ctx context.Context, frontName string, cfg config.TracfoxConfiguration)
 			}
 
 			rules = append(rules, &Rule{
-				name:       rule.Name,
-				methods:    rule.MatchMethods,
-				rewitePath: rule.RewitePath,
-				reg:        regexp.MustCompile(rule.LocationRegexp),
-				chain:      pluginsChain,
-				balancer:   balancer,
+				name:     rule.Name,
+				methods:  rule.MatchMethods,
+				reg:      regexp.MustCompile(rule.LocationRegexp),
+				chain:    pluginsChain,
+				balancer: balancer,
 			})
 		}
 		virtualHosts = append(virtualHosts, &VirtualHost{

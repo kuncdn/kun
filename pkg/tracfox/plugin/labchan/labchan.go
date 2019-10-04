@@ -15,6 +15,7 @@ limitations under the License.
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 	"sync"
@@ -52,10 +53,10 @@ func (c *cors) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 		http.Error(rw, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		return
 	}
-	glog.Infoln(resp.Message)
+	fmt.Println(resp.GetRetCode())
 	switch resp.GetRetCode() {
 	case api.RetCodeType_NO_MATCHED_API:
-		http.Error(rw, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		http.Error(rw, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	case api.RetCodeType_LOGIN_REQUIRED:
 		http.Error(rw, http.StatusText(http.StatusUnauthorized), http.StatusUnauthorized)

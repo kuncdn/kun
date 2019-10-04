@@ -14,7 +14,6 @@ limitations under the License.
 package server
 
 import (
-	"fmt"
 	"net/http"
 	"regexp"
 
@@ -30,12 +29,11 @@ const DefaultMaxRetryTimes = 10
 
 // Rule .
 type Rule struct {
-	name       string
-	methods    []string
-	rewitePath string
-	reg        *regexp.Regexp
-	chain      alice.Chain
-	balancer   proxy.Balancer
+	name     string
+	methods  []string
+	reg      *regexp.Regexp
+	chain    alice.Chain
+	balancer proxy.Balancer
 }
 
 // Match .
@@ -46,11 +44,6 @@ func (r *Rule) Match(path string, method string) bool {
 func (r *Rule) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	resp := responsewriter.NewBuffer(rw)
 	defer resp.FlushAll()
-	fmt.Println(r.rewitePath)
-	if len(r.rewitePath) != 0 {
-		match := r.reg.FindSubmatchIndex([]byte(req.URL.Path))
-		req.URL.Path = string(r.reg.Expand(nil, []byte(r.rewitePath), []byte(req.URL.Path), match))
-	}
 	for i := 0; i < DefaultMaxRetryTimes; i++ {
 		next, err := r.balancer.Elect(req)
 		if err != nil {
