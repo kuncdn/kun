@@ -21,7 +21,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 )
 
-const serverName = "Optimus"
+const serverName = "Tracfox"
 
 type headers struct {
 	next http.Handler

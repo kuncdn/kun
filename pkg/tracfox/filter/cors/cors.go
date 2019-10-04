@@ -39,6 +39,7 @@ func (c *cors) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	rw.Header().Set("Access-Control-Allow-Methods", c.plug.allowMethods)
 	rw.Header().Set("Access-Control-Allow-Headers", c.plug.allowHeaders)
 	if req.Method == "OPTIONS" {
+		rw.WriteHeader(http.StatusNoContent)
 		return
 	}
 	c.next.ServeHTTP(rw, req)
