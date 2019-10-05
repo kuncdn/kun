@@ -1,4 +1,4 @@
-package labchan
+package account
 
 /*
 Copyright 2019 The Tracfox Authors.
@@ -27,8 +27,6 @@ import (
 	"tracfox.io/tracfox/internal/util"
 	"tracfox.io/tracfox/pkg/tracfox/api"
 )
-
-const name = "labchan"
 
 type cors struct {
 	next       http.Handler

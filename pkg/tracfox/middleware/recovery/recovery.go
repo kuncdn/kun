@@ -16,6 +16,7 @@ package recovery
 import (
 	"context"
 	"net/http"
+	"runtime/debug"
 
 	"github.com/golang/glog"
 	"github.com/justinas/alice"
@@ -29,6 +30,7 @@ func (re *recovery) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	defer func() {
 		if err := recover(); err != nil {
 			glog.Errorf("Recovered from panic in http handler: %+v", err)
+			debug.PrintStack()
 			http.Error(rw, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		}
 	}()
