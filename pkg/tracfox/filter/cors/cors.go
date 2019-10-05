@@ -81,22 +81,22 @@ func Constructor(args map[string]interface{}) (alice.Constructor, error) {
 		errs = append(errs, errors.New("cors filter allowHeaders must be string"))
 	}
 
+	allowCredentials := false
 	_, ok = args["allowCredentials"]
-	if !ok {
-		errs = append(errs, errors.New("cors filter allowCredentials field is required"))
-	}
-	allowCredentials, ok := args["allowCredentials"].(bool)
-	if !ok {
-		errs = append(errs, errors.New("cors filter allowCredentials must be bool"))
+	if ok {
+		allowCredentials, ok = args["allowCredentials"].(bool)
+		if !ok {
+			errs = append(errs, errors.New("cors filter allowCredentials must be bool"))
+		}
 	}
 
+	controlMaxAge := 0
 	_, ok = args["controlMaxAge"]
-	if !ok {
-		errs = append(errs, errors.New("cors filter controlMaxAge field is required"))
-	}
-	controlMaxAge, ok := args["controlMaxAge"].(int)
-	if !ok {
-		errs = append(errs, errors.New("cors filter controlMaxAge must be int"))
+	if ok {
+		controlMaxAge, ok = args["controlMaxAge"].(int)
+		if !ok {
+			errs = append(errs, errors.New("cors filter controlMaxAge must be int"))
+		}
 	}
 
 	if len(errs) != 0 {
