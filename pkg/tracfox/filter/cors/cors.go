@@ -16,6 +16,7 @@ package cors
 import (
 	"errors"
 	"net/http"
+	"strconv"
 
 	"github.com/justinas/alice"
 	"tracfox.io/tracfox/internal/util"
@@ -24,9 +25,11 @@ import (
 const name = "cors"
 
 type corsFilter struct {
-	allowOrigin  string
-	allowMethods string
-	allowHeaders string
+	allowOrigin      string
+	allowMethods     string
+	allowHeaders     string
+	allowCredentials bool
+	controlMaxAge    int
 }
 
 type cors struct {
@@ -38,6 +41,8 @@ func (c *cors) ServeHTTP(rw http.ResponseWriter, req *http.Request) {
 	rw.Header().Set("Access-Control-Allow-Origin", c.plug.allowOrigin)
 	rw.Header().Set("Access-Control-Allow-Methods", c.plug.allowMethods)
 	rw.Header().Set("Access-Control-Allow-Headers", c.plug.allowHeaders)
+	rw.Header().Set("Access-Control-Allow-Credentials", strconv.FormatBool(c.plug.allowCredentials))
+	rw.Header().Set("Access-Control-Max-Age", strconv.Itoa(c.plug.controlMaxAge))
 	if req.Method == "OPTIONS" {
 		rw.WriteHeader(http.StatusNoContent)
 		return
@@ -76,6 +81,24 @@ func Constructor(args map[string]interface{}) (alice.Constructor, error) {
 		errs = append(errs, errors.New("cors filter allowHeaders must be string"))
 	}
 
+	_, ok = args["allowCredentials"]
+	if !ok {
+		errs = append(errs, errors.New("cors filter allowCredentials field is required"))
+	}
+	allowCredentials, ok := args["allowCredentials"].(bool)
+	if !ok {
+		errs = append(errs, errors.New("cors filter allowCredentials must be bool"))
+	}
+
+	_, ok = args["controlMaxAge"]
+	if !ok {
+		errs = append(errs, errors.New("cors filter controlMaxAge field is required"))
+	}
+	controlMaxAge, ok := args["controlMaxAge"].(int)
+	if !ok {
+		errs = append(errs, errors.New("cors filter controlMaxAge must be int"))
+	}
+
 	if len(errs) != 0 {
 		return nil, util.NewAggregateError(errs)
 	}
@@ -83,9 +106,11 @@ func Constructor(args map[string]interface{}) (alice.Constructor, error) {
 		return &cors{
 			next: next,
 			plug: &corsFilter{
-				allowOrigin:  allowOrigin,
-				allowMethods: allowMethods,
-				allowHeaders: allowHeaders,
+				allowOrigin:      allowOrigin,
+				allowMethods:     allowMethods,
+				allowHeaders:     allowHeaders,
+				allowCredentials: allowCredentials,
+				controlMaxAge:    controlMaxAge,
 			},
 		}
 	}, nil
