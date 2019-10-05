@@ -9,14 +9,14 @@ default:
 frontends:
 - name: account
   address: localhost:8080
-  certificate: /Users/aapeli/labchan/ssl/account.pem
-  certificateKey: /Users/aapeli/labchan/ssl/account-key.pem
+  # certificate: /Users/aapeli/labchan/ssl/account.pem
+  # certificateKey: /Users/aapeli/labchan/ssl/account-key.pem
   virtualHosts:
     - domains: ["localhost"]
       filters:
       - name: cors
         config:
-          allowHeaders: "Content-Type,AccessToken,X-CSRF-Token, Authorization, Token"
+          allowHeaders: "Content-Type, Authorization"
           allowOrigin: "*"
           allowMethods: "GET, POST, PUT, DELETE, PATCH, OPTIONS"
       rules:
@@ -25,12 +25,12 @@ frontends:
         matchMethods: [GET,POST,PUT,DELETE,PATCH]
         rewitePath: /$1
         backend: account
-        filters:
-        - name: accessByAccount
-          config:
-            serverName: account
-            address: localhost:8082
-            certificate: /Users/aapeli/labchan/ssl/ca.pem
+        # filters:
+        # - name: accessByAccount
+        #   config:
+        #     serverName: account
+        #     address: 127.0.0.1:8082
+        #     certificate: /Users/aapeli/labchan/ssl/ca.pem
 
 backends:
 - name: account

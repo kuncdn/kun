@@ -14,7 +14,7 @@
 
 # 编译
 
-go build -o tracfox cmd/tracfox/main.go
+    go build -o tracfox cmd/tracfox/main.go
 
 
 # 帮助
@@ -52,7 +52,6 @@ go build -o tracfox cmd/tracfox/main.go
 
 
     default:
-      metricAddr: localhost:8000
       graceTimeOut: 100
       readTimeout: 100
       idleTimeout: 100
@@ -63,10 +62,16 @@ go build -o tracfox cmd/tracfox/main.go
     frontends:
     - name: account
       address: localhost:8080
-      # certificate: ssl/tracfox.pem
-      # certificateKey: ssl/tracfox-key.pem
+      # certificate: ssl/account.pem
+      # certificateKey: ssl/account-key.pem
       virtualHosts:
-        - domains: [ "localhost", "api.labchan.com" ]
+        - domains: ["localhost"]
+          filters:
+          - name: cors
+            config:
+              allowHeaders: "Content-Type, Authorization"
+              allowOrigin: "*"
+              allowMethods: "GET, POST, PUT, DELETE, PATCH, OPTIONS"
           rules:
           - name: account
             locationRegexp: ^/v1/account/(.*)
@@ -74,16 +79,11 @@ go build -o tracfox cmd/tracfox/main.go
             rewitePath: /$1
             backend: account
             filters:
-            - name: cors
-              config:
-                allowHeaders: "Content-Type,Accept"
-                allowOrigin: "*"
-                allowMethods: "GET"
             - name: accessByAccount
               config:
                 serverName: account
-                address: localhost:8082
-                certificate: /Users/aapeli/labchan/ssl/ca.pem
+                address: 127.0.0.1:8082
+                certificate: ssl/ca.pem
 
     backends:
     - name: account
@@ -97,15 +97,5 @@ go build -o tracfox cmd/tracfox/main.go
         tcpKeepAlive: 100
         idleConnTimeout: 100
         maxIdleConnsPerHost: 100
-        target: http://127.0.0.1:8083/
-
-      - name: account2
-        weight: 2
-        maxFails: 2
-        failTimeout: 10
-        tcpTimeout: 100
-        tcpKeepAlive: 100
-        idleConnTimeout: 100
-        maxIdleConnsPerHost: 100
-        target: http://127.0.0.1:8084/
-
+        target: https://127.0.0.1:8083/
+        
