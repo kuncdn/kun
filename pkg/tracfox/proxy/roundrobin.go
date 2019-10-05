@@ -29,7 +29,7 @@ const DefaultMaxRoundRobinRetryMultiple = 3
 
 type roundRobinHandler struct {
 	cfg          *Config
-	lock         sync.Mutex
+	lock         sync.RWMutex
 	next         http.Handler
 	failureTimes int
 	lastFailTime int64
@@ -40,17 +40,29 @@ func (r *roundRobinHandler) ServeHTTP(rw http.ResponseWriter, req *http.Request)
 	fakeResponseWriter := responsewriter.NewBuffer(rw)
 	defer fakeResponseWriter.FlushAll()
 	r.next.ServeHTTP(fakeResponseWriter, req)
-	r.lock.Lock()
-	defer r.lock.Unlock()
+	r.lock.RLock()
+
+	if util.IsSuccessCode(fakeResponseWriter.Code) && !r.failMode { // success pass
+		r.lock.RUnlock()
+		return
+	}
+
 	if util.IsSuccessCode(fakeResponseWriter.Code) {
+		r.lock.RUnlock()
+		r.lock.Lock()
+		defer r.lock.Unlock()
 		r.failMode = false
 		r.failureTimes = 0
-	} else {
-		r.failureTimes++
-		r.lastFailTime = time.Now().UnixNano()
-		if r.failureTimes > r.cfg.Maxfails {
-			r.failMode = true
-		}
+		return
+	}
+
+	r.lock.RUnlock()
+	r.lock.Lock()
+	defer r.lock.Unlock()
+	r.failureTimes++
+	r.lastFailTime = time.Now().UnixNano()
+	if r.failureTimes > r.cfg.Maxfails {
+		r.failMode = true
 	}
 }
 
