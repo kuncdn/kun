@@ -22,8 +22,6 @@ import (
 	"tracfox.io/tracfox/internal/util"
 )
 
-const name = "cors"
-
 type corsFilter struct {
 	allowOrigin      string
 	allowMethods     string

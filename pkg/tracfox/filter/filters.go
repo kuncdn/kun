@@ -20,13 +20,13 @@ import (
 	"github.com/golang/glog"
 	"github.com/justinas/alice"
 	"tracfox.io/tracfox/pkg/tracfox/config"
+	"tracfox.io/tracfox/pkg/tracfox/filter/account"
 	"tracfox.io/tracfox/pkg/tracfox/filter/cors"
-	"tracfox.io/tracfox/pkg/tracfox/filter/labchan"
 )
 
 func init() {
 	filters["cors"] = cors.Constructor
-	filters["accessByAccount"] = labchan.Constructor
+	filters["accessByAccount"] = account.Constructor
 }
 
 var (

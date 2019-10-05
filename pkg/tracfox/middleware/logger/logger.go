@@ -35,9 +35,9 @@ func (l *loggerConstructor) ServeHTTP(rw http.ResponseWriter, req *http.Request)
 	end := time.Now()
 	latency := end.Sub(start)
 	if fakerw.Code != 200 {
-		glog.V(1).Infof("\033[33m\033[01m %d \033[0m%s %13v    %s  %s  \033[32m  %s  \033[0m %s  %s  %s", fakerw.Code, req.RemoteAddr, latency, req.Host, req.RequestURI, req.Method, req.Referer(), req.UserAgent(), req.Header.Get("uuid"))
+		glog.V(1).Infof("\033[33m\033[01m %d \033[0m%s %13v    %s  %s  \033[32m  %s  \033[0m %s  %s", fakerw.Code, req.RemoteAddr, latency, req.Host, req.RequestURI, req.Method, req.Referer(), req.UserAgent())
 	} else {
-		glog.V(1).Infof("\033[32m %d \033[0m%s %13v    %s  %s  \033[32m %s  \033[0m  %s  %s  %s", fakerw.Code, req.RemoteAddr, latency, req.Host, req.RequestURI, req.Method, req.Referer(), req.UserAgent(), req.Header.Get("uuid"))
+		glog.V(1).Infof("\033[32m %d \033[0m%s %13v    %s  %s  \033[32m %s  \033[0m  %s  %s", fakerw.Code, req.RemoteAddr, latency, req.Host, req.RequestURI, req.Method, req.Referer(), req.UserAgent())
 	}
 }
 
