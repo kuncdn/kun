@@ -1,4 +1,4 @@
-# tracfox
+# koala
 
 # 一款轻量级的HTTP(S)负载均衡器和微服务网关
 
@@ -14,26 +14,26 @@
 
 # 编译
 
-    go build -o tracfox cmd/tracfox/main.go
+    go build -o koala cmd/koala/main.go
 
 
 # 帮助
 
-    # ./tracfox --help
-    tracfox service, is the api gateway micro service component 
+    # ./koala --help
+    koala service, is the api gateway micro service component 
 
     Usage:
-      tracfox [flags]
+      koala [flags]
 
     Flags:
           --alsologtostderr                  log to standard error as well as files
-          --config string                    The Tracfox Server will load its initial configuration from this file. The path may be absolute or relative; relative paths start at the Tracfox's current working directory. Omit this flag to use the built-in default configuration values. Command-line flags override configuration from this file. (default "/etc/tracfox/config.yaml")
+          --config string                    The Koala Server will load its initial configuration from this file. The path may be absolute or relative; relative paths start at the Koala's current working directory. Omit this flag to use the built-in default configuration values. Command-line flags override configuration from this file. (default "/etc/koala/config.yaml")
           --dry-run                          If true, only check the configuration file and exit.
-      -h, --help                             show more information about tracfox
+      -h, --help                             show more information about koala
           --log_backtrace_at traceLocation   when logging hits line file:N, emit a stack trace (default :0)
           --log_dir string                   If non-empty, write log files in this directory
           --logtostderr                      log to standard error instead of files
-          --metrics string                   Metric address for tracfox server
+          --metrics string                   Metric address for koala server
           --stderrthreshold severity         logs at or above this threshold go to stderr (default 2)
       -v, --v Level                          log level for V logs
           --vmodule moduleSpec               comma-separated list of pattern=N settings for file-filtered logging
@@ -41,12 +41,12 @@
 
 # 检查配置文件正确性
 
-    # ./tracfox  --config=examples/config.yaml --logtostderr  -v 10  --dry-run
+    # ./koala  --config=examples/config.yaml --logtostderr  -v 10  --dry-run
 
 # 运行
 
 
-    # ./tracfox  --config=examples/config.yaml --logtostderr  -v 10
+    # ./koala  --config=examples/config.yaml --logtostderr  -v 10
 
 # 简单示例配置
 

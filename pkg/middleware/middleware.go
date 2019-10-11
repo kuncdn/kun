@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The Tracfox Authors.
+Copyright 2019 The Koala Authors.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -17,9 +17,9 @@ import (
 	"context"
 
 	"github.com/justinas/alice"
-	"tracfox.io/tracfox/pkg/tracfox/middleware/logger"
-	"tracfox.io/tracfox/pkg/tracfox/middleware/recovery"
-	"tracfox.io/tracfox/pkg/tracfox/middleware/version"
+	"github.com/shimcdn/koala/pkg/middleware/logger"
+	"github.com/shimcdn/koala/pkg/middleware/recovery"
+	"github.com/shimcdn/koala/pkg/middleware/version"
 )
 
 // NewDefaultChain .

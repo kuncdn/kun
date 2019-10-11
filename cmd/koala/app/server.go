@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The Tracfox Authors.
+Copyright 2019 The Koala Authors.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -25,27 +25,27 @@ import (
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
 	"gopkg.in/yaml.v2"
-	"tracfox.io/tracfox/cmd/tracfox/app/options"
-	"tracfox.io/tracfox/internal/util"
-	"tracfox.io/tracfox/pkg/tracfox/config"
-	"tracfox.io/tracfox/pkg/tracfox/server"
+	"github.com/shimcdn/koala/cmd/koala/app/options"
+	"github.com/shimcdn/koala/internal/util"
+	"github.com/shimcdn/koala/pkg/config"
+	"github.com/shimcdn/koala/pkg/server"
 )
 
 const (
 	// componenttracway component name
-	componentTracfox = "tracfox"
+	componentKoala = "koala"
 )
 
-// NewTracfoxCommand 新建 tracwayCommand
-func NewTracfoxCommand(stopCh <-chan struct{}) *cobra.Command {
-	cleanFlagSet := pflag.NewFlagSet(componentTracfox, pflag.ContinueOnError)
-	tracwayFlags := options.NewTracfoxFlags()
+// NewKoalaCommand 新建 tracwayCommand
+func NewKoalaCommand(stopCh <-chan struct{}) *cobra.Command {
+	cleanFlagSet := pflag.NewFlagSet(componentKoala, pflag.ContinueOnError)
+	tracwayFlags := options.NewKoalaFlags()
 
-	tracwayConfiguration := &config.TracfoxConfiguration{} // 携带默认值的配置
+	tracwayConfiguration := &config.KoalaConfiguration{} // 携带默认值的配置
 
 	cmd := &cobra.Command{
-		Use:                componentTracfox,
-		Short:              "tracfox service, is the api gateway micro service component of labchan",
+		Use:                componentKoala,
+		Short:              "koala service, is the api gateway micro service component of labchan",
 		DisableFlagParsing: true,
 		Run: func(cmd *cobra.Command, args []string) {
 			if err := cleanFlagSet.Parse(args); err != nil {
@@ -69,11 +69,11 @@ func NewTracfoxCommand(stopCh <-chan struct{}) *cobra.Command {
 				return
 			}
 
-			if errs := options.ValidateTracfoxFlags(tracwayFlags); len(errs) != 0 {
+			if errs := options.ValidateKoalaFlags(tracwayFlags); len(errs) != 0 {
 				glog.Exitln(util.NewAggregateError(errs))
 			}
 
-			if configFile := tracwayFlags.TracfoxConfig; len(configFile) != 0 {
+			if configFile := tracwayFlags.KoalaConfig; len(configFile) != 0 {
 				loadConfigFile(configFile)
 				tracwayConfiguration, err = loadConfigFile(configFile)
 				if err != nil {
@@ -82,7 +82,7 @@ func NewTracfoxCommand(stopCh <-chan struct{}) *cobra.Command {
 				if err := tracwayFlagPrecedence(tracwayConfiguration, args); err != nil {
 					glog.Exitln(err.Error())
 				}
-				if errs := options.ValidateTracfoxConfiguration(tracwayConfiguration); len(errs) != 0 {
+				if errs := options.ValidateKoalaConfiguration(tracwayConfiguration); len(errs) != 0 {
 					glog.Exitln("config file is incorrect error msg:", util.NewAggregateError(errs))
 				}
 			}
@@ -114,17 +114,17 @@ func NewTracfoxCommand(stopCh <-chan struct{}) *cobra.Command {
 	tracwayFlags.AddFlags(cleanFlagSet)
 	cleanFlagSet.AddGoFlagSet(flag.CommandLine)
 	flag.CommandLine.Parse([]string{})
-	options.AddTracfoxConfigurationFlags(cleanFlagSet, tracwayConfiguration)
+	options.AddKoalaConfigurationFlags(cleanFlagSet, tracwayConfiguration)
 	cmd.Flags().AddFlagSet(cleanFlagSet)
 	return cmd
 }
 
-func tracwayFlagPrecedence(tracwayConfiguration *config.TracfoxConfiguration, args []string) error {
+func tracwayFlagPrecedence(tracwayConfiguration *config.KoalaConfiguration, args []string) error {
 	fs := pflag.NewFlagSet("", pflag.ContinueOnError)
 	fs.AddGoFlagSet(flag.CommandLine)
-	tracwayFlags := options.NewTracfoxFlags()
+	tracwayFlags := options.NewKoalaFlags()
 
-	options.AddTracfoxConfigurationFlags(fs, tracwayConfiguration)
+	options.AddKoalaConfigurationFlags(fs, tracwayConfiguration)
 	tracwayFlags.AddFlags(fs)
 	if err := fs.Parse(args); err != nil {
 		return err
@@ -132,8 +132,8 @@ func tracwayFlagPrecedence(tracwayConfiguration *config.TracfoxConfiguration, ar
 	return nil
 }
 
-func loadConfigFile(filename string) (*config.TracfoxConfiguration, error) {
-	tracwayConfiguration := config.TracfoxConfiguration{}
+func loadConfigFile(filename string) (*config.KoalaConfiguration, error) {
+	tracwayConfiguration := config.KoalaConfiguration{}
 	file, err := os.OpenFile(filename, os.O_RDONLY, 0600)
 	if err != nil {
 		return nil, err

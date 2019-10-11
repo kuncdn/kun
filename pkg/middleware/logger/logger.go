@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The Tracfox Authors.
+Copyright 2019 The Koala Authors.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -20,7 +20,7 @@ import (
 
 	"github.com/golang/glog"
 	"github.com/justinas/alice"
-	"tracfox.io/tracfox/internal/responsewriter"
+	"github.com/shimcdn/koala/internal/responsewriter"
 )
 
 type loggerConstructor struct {

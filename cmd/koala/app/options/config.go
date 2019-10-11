@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The Tracfox Authors.
+Copyright 2019 The Koala Authors.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -21,19 +21,19 @@ import (
 
 	"github.com/spf13/pflag"
 	"gopkg.in/go-playground/validator.v9"
-	"tracfox.io/tracfox/internal/util"
-	"tracfox.io/tracfox/pkg/tracfox/config"
-	"tracfox.io/tracfox/pkg/tracfox/filter"
-	"tracfox.io/tracfox/pkg/tracfox/proxy"
+	"github.com/shimcdn/koala/internal/util"
+	"github.com/shimcdn/koala/pkg/config"
+	"github.com/shimcdn/koala/pkg/filter"
+	"github.com/shimcdn/koala/pkg/proxy"
 )
 
-// AddTracfoxConfigurationFlags 将config.TracfoxConfiguration对应的所有flag添加到指定的  pflag.FlagSet中
-func AddTracfoxConfigurationFlags(mainfs *pflag.FlagSet, f *config.TracfoxConfiguration) {
+// AddKoalaConfigurationFlags 将config.KoalaConfiguration对应的所有flag添加到指定的  pflag.FlagSet中
+func AddKoalaConfigurationFlags(mainfs *pflag.FlagSet, f *config.KoalaConfiguration) {
 	fs := pflag.NewFlagSet("", pflag.ExitOnError)
 	defer func() {
 		mainfs.AddFlagSet(fs)
 	}()
-	// fs.StringVar(&f.Default.MetricAddr, "metrics", f.Default.MetricAddr, "Metric address for tracfox server")
+	// fs.StringVar(&f.Default.MetricAddr, "metrics", f.Default.MetricAddr, "Metric address for koala server")
 }
 
 var validate *validator.Validate
@@ -42,8 +42,8 @@ func init() {
 	validate = validator.New()
 }
 
-//ValidateTracfoxConfiguration 验证 TracfoxConfiguration中填充的数据是否满足要求
-func ValidateTracfoxConfiguration(f *config.TracfoxConfiguration) (errs []error) {
+//ValidateKoalaConfiguration 验证 KoalaConfiguration中填充的数据是否满足要求
+func ValidateKoalaConfiguration(f *config.KoalaConfiguration) (errs []error) {
 	if err := validateDefault(f.Default); err != nil {
 		errs = append(errs, err)
 	}

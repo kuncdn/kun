@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The Tracfox Authors.
+Copyright 2019 The Koala Authors.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -22,8 +22,8 @@ import (
 	"regexp"
 	"time"
 
-	"tracfox.io/tracfox/internal/util"
-	"tracfox.io/tracfox/pkg/tracfox/config"
+	"github.com/shimcdn/koala/internal/util"
+	"github.com/shimcdn/koala/pkg/config"
 )
 
 // NewBalancedReverseProxy .

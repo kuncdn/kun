@@ -1,4 +1,4 @@
-module tracfox.io/tracfox
+module github.com/shimcdn/koala
 
 go 1.12
 
