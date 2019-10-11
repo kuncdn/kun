@@ -12,3 +12,4 @@
 *.out
 .vscode/
 /ssl/
+.DS_Store
