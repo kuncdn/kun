@@ -23,7 +23,7 @@ message URL {
 
 message Request {
   map<string, string> Header = 1;
-  repeated byte Body = 2;
+  bytes Body = 2;
   string RemoteAddr = 3;
   string Method = 5;
   string Proto = 6;
@@ -32,7 +32,7 @@ message Request {
 
 message Response {
   map<string, string> Header = 1;
-  repeated byte Body = 2;
+  bytes Body = 2;
   StatusCode Status = 3;
 }
 
