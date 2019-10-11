@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The Tracfox Authors.
+Copyright 2019 The Koala Authors.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -30,7 +30,7 @@ func init() {
 func main() {
 	rand.Seed(time.Now().UnixNano())
 	stopChan := server.SetupSignalHandler()
-	cmd := app.NewTracfoxCommand(stopChan)
+	cmd := app.NewKoalaCommand(stopChan)
 	if err := cmd.Execute(); err != nil {
 		glog.Fatalln(err.Error())
 	}

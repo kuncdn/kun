@@ -27,7 +27,7 @@
 
     Flags:
           --alsologtostderr                  log to standard error as well as files
-          --config string                    The Tracfox Server will load its initial configuration from this file. The path may be absolute or relative; relative paths start at the Tracfox's current working directory. Omit this flag to use the built-in default configuration values. Command-line flags override configuration from this file. (default "/etc/tracfox/config.yaml")
+          --config string                    The Koala Server will load its initial configuration from this file. The path may be absolute or relative; relative paths start at the Koala's current working directory. Omit this flag to use the built-in default configuration values. Command-line flags override configuration from this file. (default "/etc/tracfox/config.yaml")
           --dry-run                          If true, only check the configuration file and exit.
       -h, --help                             show more information about tracfox
           --log_backtrace_at traceLocation   when logging hits line file:N, emit a stack trace (default :0)

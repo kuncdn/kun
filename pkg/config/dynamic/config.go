@@ -1,3 +1,5 @@
+package dynamic
+
 /*
 Copyright 2019 The Koala Authors.
 Licensed under the Apache License, Version 2.0 (the "License");
@@ -11,24 +13,14 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 
-package util
-
-// StatusCodeContains .
-func StatusCodeContains(codes []int, code int) bool {
-	for _, a := range codes {
-		if a == code {
-			return true
-		}
-	}
-	return false
+// Message .
+type Message struct {
+	ProviderName  string
+	Configuration *Configuration
 }
 
-// Contains .
-func Contains(s []string, e string) bool {
-	for _, a := range s {
-		if a == e {
-			return true
-		}
-	}
-	return false
+// Configuration is the root of the dynamic configuration
+type Configuration struct {
+	HTTP *HTTPConfiguration `json:"http,omitempty" yaml:"http,omitempty"`
+	TLS  *TLSConfiguration  `json:"tls,omitempty" yaml:"tls,omitempty"`
 }

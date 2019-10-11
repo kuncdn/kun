@@ -1,5 +1,5 @@
 /*
-Copyright 2019 The Tracfox Authors.
+Copyright 2019 The Koala Authors.
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
 You may obtain a copy of the License at
@@ -27,8 +27,8 @@ import (
 	"tracfox.io/tracfox/pkg/tracfox/proxy"
 )
 
-// AddTracfoxConfigurationFlags 将config.TracfoxConfiguration对应的所有flag添加到指定的  pflag.FlagSet中
-func AddTracfoxConfigurationFlags(mainfs *pflag.FlagSet, f *config.TracfoxConfiguration) {
+// AddKoalaConfigurationFlags 将config.KoalaConfiguration对应的所有flag添加到指定的  pflag.FlagSet中
+func AddKoalaConfigurationFlags(mainfs *pflag.FlagSet, f *config.KoalaConfiguration) {
 	fs := pflag.NewFlagSet("", pflag.ExitOnError)
 	defer func() {
 		mainfs.AddFlagSet(fs)
@@ -42,8 +42,8 @@ func init() {
 	validate = validator.New()
 }
 
-//ValidateTracfoxConfiguration 验证 TracfoxConfiguration中填充的数据是否满足要求
-func ValidateTracfoxConfiguration(f *config.TracfoxConfiguration) (errs []error) {
+//ValidateKoalaConfiguration 验证 KoalaConfiguration中填充的数据是否满足要求
+func ValidateKoalaConfiguration(f *config.KoalaConfiguration) (errs []error) {
 	if err := validateDefault(f.Default); err != nil {
 		errs = append(errs, err)
 	}
